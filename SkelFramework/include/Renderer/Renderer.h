@@ -12,21 +12,21 @@ namespace skel
 		~Renderer();
 
 		void Begin(); // Bind FBO, clear
-		void End();   // Unbind FBO
+		void End(); // Unbind FBO
 
 
 		void Resize(int width, int height);
 
 
 		void Clear(const float4& color);
-		void BlitSurface(Surface* surface, int x, int y);
-
+		void BlitSurface(Surface& surface, int x, int y);
 
 
 		uint32_t GetOutputTexture() const { return m_colorTexture; }
 
 		int GetWidth() const { return m_width; }
 		int GetHeight() const { return m_height; }
+
 	private:
 		void InitFramebuffer();
 		void InitQuad();
@@ -40,7 +40,4 @@ namespace skel
 
 		int m_width, m_height;
 	};
-
-
 }
-

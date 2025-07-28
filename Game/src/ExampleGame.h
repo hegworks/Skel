@@ -1,5 +1,6 @@
 #pragma once
 #include "Core/GameBase.h"
+#include "Renderer/CPUTileSheet.h"
 #include "Renderer/Surface.h"
 
 class ExampleGame : public skel::GameBase
@@ -14,16 +15,16 @@ public:
 	void Render(skel::Renderer& renderer) override;
 
 private:
-	std::unique_ptr<skel::Surface> m_screen{ nullptr };
-	std::unique_ptr<skel::Surface> m_testImage{ nullptr };
+	std::unique_ptr<skel::Surface> m_screen{nullptr};
+	std::unique_ptr<skel::Surface> m_testImage{nullptr};
+	std::unique_ptr<skel::Surface> m_hegSurface{nullptr};
+	std::unique_ptr<skel::CPUTileSheet> m_tileSheet{nullptr};
 
 	float m_totalTime = 0;
 
 	int m_circleRadius = 0;
 
-	
-	skel::float2 ballPos{ 100, 100 };
-	skel::float2 ballVel{ 60, 45 };
+	skel::float2 ballPos{100, 100};
+	skel::float2 ballVel{60, 45};
 	skel::int2 ballSize;
 };
-
