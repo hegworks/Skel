@@ -2,59 +2,54 @@
 
 namespace skel
 {
+	class Surface
+	{
+	public:
+		Surface(int width, int height, bool needGPUTexture);
+		Surface(const std::string& file, bool needGPUTexture);
+		~Surface();
 
+		Surface(const Surface& other) = delete;
+		Surface& operator=(const Surface& other) = delete;
 
-class Surface
-{
-public:
-    Surface(int width, int height, bool needGPUTexture);
-    Surface(const std::string& file, bool needGPUTexture);
-    ~Surface();
+		// rendering
 
-    Surface(const Surface& other) = delete;
-    Surface& operator=(const Surface& other) = delete;
+		void Clear(uint color);
 
+		void Plot(int x, int y, uint color);
+		void Plot(const int2& p, uint color);
 
+		void Line(int x1, int y1, int x2, int y2, uint color);
+		void Line(const int2& p1, const int2& p2, uint color);
 
-    // rendering
+		void CopyTo(int x, int y, Surface& d) const;
+		void CopyTo(const int2& p, Surface& d) const;
 
-    void Clear(uint color);
+		void Rectangle(int x1, int y1, int x2, int y2, uint color, int strokeWidth = 0);
+		void Rectangle(const int2& p1, const int2& p2, uint color, int strokeWidth = 0);
 
-    void Plot(int x, int y, uint color);
-    void Plot(const int2& p, uint color);
+		void Circle(int cx, int cy, int radius, uint color, int strokeWidth = 0);
+		void Circle(const int2& center, int radius, uint color, int strokeWidth = 0);
 
-    void Line(int x1, int y1, int x2, int y2, uint color);
-    void Line(const int2& p1, const int2& p2, uint color);
+		void UpdateGPUTexture();
+		uint32_t GetTextureID();
 
-    void CopyTo(int x, int y, Surface* d) const;
-    void CopyTo(const int2& p, Surface* d) const;
+		// when editing values with it will not be marked as dirty so you need to manually mark it.
+		uint32_t* GetBuffer() { return m_pixels; }
+		int GetWidth() const { return m_width; }
+		int GetHeight() const { return m_height; }
+		int2 GetSize() const { return {m_width, m_height}; }
 
-    void Rectangle(int x1, int y1, int x2, int y2, uint color, int strokeWidth = 0);
-    void Rectangle(const int2& p1, const int2& p2, uint color, int strokeWidth = 0);
+		void MarkAsDirty() { m_dirty = true; }
 
-    void Circle(int cx, int cy, int radius, uint color, int strokeWidth = 0);
-    void Circle(const int2& center, int radius, uint color, int strokeWidth = 0);
+	private:
+		void InitTexture();
 
-    void UpdateGPUTexture();
-    uint32_t GetTextureID();
+	private:
+		uint32_t* m_pixels = nullptr;
+		int m_width = 0, m_height = 0;
 
-
-    // when editing values with it will not be marked as dirty so you need to manually mark it.
-    uint32_t* GetBuffer() { return m_pixels; }
-    int GetWidth() const { return m_width; }
-    int GetHeight() const { return m_height; }
-
-    void MarkAsDirty() { m_dirty = true; }
-private:
-    void InitTexture();
-
-private:
-    uint32_t* m_pixels = nullptr;
-    int m_width = 0, m_height = 0;
-
-    uint32_t m_textureID = 0;
-    bool m_dirty = true;
-};
-
-
+		uint32_t m_textureID = 0;
+		bool m_dirty = true;
+	};
 }

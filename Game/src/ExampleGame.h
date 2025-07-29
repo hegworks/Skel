@@ -3,28 +3,30 @@
 #include "Renderer/CPUTileSheet.h"
 #include "Renderer/Surface.h"
 
-class ExampleGame : public skel::GameBase
+class ExampleGame : public GameBase
 {
 public:
 	ExampleGame() = default;
 
-	skel::EngineInitValues GetStartupSettings() override;
+	EngineInitValues GetStartupSettings() override;
 
 	void Initialize() override;
 	void Update(float deltaTime) override;
-	void Render(skel::Renderer& renderer) override;
+	void Render(Renderer& renderer) override;
 
 private:
-	std::unique_ptr<skel::Surface> m_screen{nullptr};
-	std::unique_ptr<skel::Surface> m_testImage{nullptr};
-	std::unique_ptr<skel::Surface> m_hegSurface{nullptr};
-	std::unique_ptr<skel::CPUTileSheet> m_tileSheet{nullptr};
+	std::unique_ptr<Surface> m_screen{nullptr};
+	std::unique_ptr<Surface> m_testImage{nullptr};
+	std::unique_ptr<Surface> m_hegSurface{nullptr};
+	std::unique_ptr<Surface> m_btnSurface{nullptr};
+	std::unique_ptr<CPUTileSheet> m_btnTile{nullptr};
+	std::unique_ptr<CPUTileSheet> m_tileSheet{nullptr};
 
 	float m_totalTime = 0;
 
 	int m_circleRadius = 0;
 
-	skel::float2 ballPos{100, 100};
-	skel::float2 ballVel{60, 45};
-	skel::int2 ballSize;
+	float2 ballPos{100, 100};
+	float2 ballVel{60, 45};
+	int2 ballSize;
 };

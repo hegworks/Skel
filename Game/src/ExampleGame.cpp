@@ -1,9 +1,11 @@
 #include "skelpch.h"
 #include "ExampleGame.h"
 
+#include "UITest.h"
 #include "Math/ColorConverter.h"
+#include "UI/ConsolePanel.h"
 
-skel::EngineInitValues ExampleGame::GetStartupSettings()
+EngineInitValues ExampleGame::GetStartupSettings()
 {
 	return
 	{
@@ -11,8 +13,8 @@ skel::EngineInitValues ExampleGame::GetStartupSettings()
 		.startupWindowWidth = 1600,
 		.startupWindowHeight = 900,
 
-		.rendererWidth = 1600,
-		.rendererHeight = 900,
+		.rendererWidth = 800,
+		.rendererHeight = 450,
 
 		.vsyncEnabled = false,
 
@@ -23,23 +25,31 @@ skel::EngineInitValues ExampleGame::GetStartupSettings()
 
 void ExampleGame::Initialize()
 {
-	const skel::Renderer& renderer = skel::Engine::GetInstance().GetRenderer();
+	const Renderer& renderer = Engine::GetInstance().GetRenderer();
 
-	m_screen = std::make_unique<skel::Surface>(renderer.GetWidth(), renderer.GetHeight(), true);
+	// Engine::GetInstance().GetConsole().SetEnabled(false);
 
-	m_testImage = std::make_unique<skel::Surface>("assets/testAsset.png", false);
+	m_screen = std::make_unique<Surface>(renderer.GetWidth(), renderer.GetHeight(), true);
+
+	m_testImage = std::make_unique<Surface>("assets/testAsset.png", false);
 	ballSize = {m_testImage->GetWidth(), m_testImage->GetHeight()};
 	m_circleRadius = static_cast<int>(static_cast<float>(ballSize.x) * 0.5f);
 
-	m_hegSurface = std::make_unique<skel::Surface>("assets/heg.png", true);
+	m_hegSurface = std::make_unique<Surface>("assets/heg.png", true);
 	SKEL_INFO("hegSurfaceSize:" + std::to_string(m_hegSurface->GetWidth()) + "x" + std::to_string(m_hegSurface->GetHeight()));
 
-	m_tileSheet = std::make_unique<skel::CPUTileSheet>("assets/tileset.png", skel::int2(32, 32));
+	m_tileSheet = std::make_unique<CPUTileSheet>("assets/tileset.png", int2(32, 32));
+
+	m_btnTile = std::make_unique<CPUTileSheet>("assets/btn.png", int2(138, 141));
+	m_btnSurface = std::make_unique<Surface>("assets/btn.png", true);
+
+	// std::shared_ptr<UIPanel> uiTest = std::make_shared<UITest>();
+	// Engine::GetInstance().GetUIManager().RegisterPanel(uiTest);
 }
 
 void ExampleGame::Update(const float deltaTime)
 {
-	const auto& input = skel::Engine::GetInstance().GetInput();
+	const InputManager& input = Engine::GetInstance().GetInput();
 
 	if(input.GetScrollDelta() > 0)
 	{
@@ -73,19 +83,33 @@ void ExampleGame::Update(const float deltaTime)
 	constexpr float friction = 0.5f;
 	ballVel -= ballVel * friction * deltaTime;
 
+	// int2 mousePos = input.GetMousePosition();
+	// SKEL_INFO("MousePosition: {},{}", mousePos.x, mousePos.y);
+
 	m_totalTime += deltaTime;
 }
 
-void ExampleGame::Render(skel::Renderer& renderer)
+void ExampleGame::Render(Renderer& renderer)
 {
-	const skel::float3 bg = skel::HSVtoRGB(fmodf(m_totalTime * 0.1f, 1.f), .7f, .7f);
-	m_screen->Clear(skel::ColorToUint32(skel::float4(bg, 1.f)));
+	const InputManager& input = Engine::GetInstance().GetInput();
 
-	m_testImage->CopyTo({static_cast<int>(ballPos.x), static_cast<int>(ballPos.y)}, m_screen.get());
+	const float3 bg = HSVtoRGB(fmodf(m_totalTime * 0.1f, 1.f), .7f, .7f);
+	m_screen->Clear(ColorToUint32(float4(bg, 1.f)));
+
+	m_testImage->CopyTo({static_cast<int>(ballPos.x), static_cast<int>(ballPos.y)}, *m_screen);
 
 	m_screen->Circle(static_cast<int>(ballPos.x + ballSize.x / 2), static_cast<int>(ballPos.y + ballSize.y / 2), m_circleRadius, 0xffFFCF56, 1);
 	// renderer.BlitSurface(m_hegSurface.get(), 0, 0);
 
-	m_tileSheet->DrawTile(*m_screen, skel::int2(100, 100), 5);
+	int2 btnPos = input.GetMousePosition() - (m_btnTile->GetCellSize() / 2);
+
+	// m_btnTile->DrawTile(*m_screen, btnPos, 0);
+
+	m_btnSurface->CopyTo(btnPos, *m_screen);
+
+	m_screen->Line(m_screen->GetWidth() / 2, m_screen->GetHeight() / 2, input.GetMousePosition().x, input.GetMousePosition().y, 0xffff0000);
+	m_tileSheet->DrawTile(*m_screen, int2(100, 100), 5);
 	renderer.BlitSurface(*m_screen, 0, 0);
+
+	// renderer.BlitSurface(*m_btn, btnPos.x, btnPos.y);
 }

@@ -6,7 +6,7 @@ int main()
 {
 
     ExampleGame mainGame;
-    skel::Engine::GetInstance().Run(mainGame);
+    Engine::GetInstance().Run(mainGame);
 
     return 0;
 }

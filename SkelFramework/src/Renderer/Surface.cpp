@@ -1,7 +1,6 @@
 ﻿#include "skelpch.h"
 #include "Renderer/Surface.h"
 
-
 #include <algorithm>
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -14,7 +13,6 @@
 
 #include "glad/glad.h"
 #include "stbimage/stb_image.h"
-
 
 // helper macro for line clipping
 #define OUTCODE(x,y) (((x)<xmin)?1:(((x)>xmax)?2:0))+(((y)<ymin)?4:(((y)>ymax)?8:0))
@@ -102,7 +100,6 @@ void skel::Surface::Line(const int x1, const int y1, const int x2, const int y2,
 	float x2f = static_cast<float>(x2);
 	float y2f = static_cast<float>(y2);
 
-
 	// clip (Cohen-Sutherland, https://en.wikipedia.org/wiki/Cohen%E2%80%93Sutherland_algorithm)
 	const float xmin = 0, ymin = 0, xmax = static_cast<float>(m_width) - 1, ymax = static_cast<float>(m_height) - 1;
 	int c0 = OUTCODE(x1f, y1f), c1 = OUTCODE(x2f, y2f);
@@ -146,22 +143,24 @@ void skel::Surface::Line(const int2& p1, const int2& p2, const uint color)
 	Line(p1.x, p1.y, p2.x, p2.y, color);
 }
 
-void skel::Surface::CopyTo(int x, int y, Surface* d) const
+void Surface::CopyTo(int x, int y, Surface& d) const
 {
-	uint* dst = d->m_pixels;
+	uint* dst = d.m_pixels;
 	uint* src = m_pixels;
 	if((src) && (dst))
 	{
 		int srcwidth = m_width;
 		int srcheight = m_height;
-		int dstwidth = d->m_width;
-		int dstheight = d->m_height;
+		int dstwidth = d.m_width;
+		int dstheight = d.m_height;
+		int srcx = 0, srcy = 0;
 		if((srcwidth + x) > dstwidth) srcwidth = dstwidth - x;
 		if((srcheight + y) > dstheight) srcheight = dstheight - y;
-		if(x < 0) src -= x, srcwidth += x, x = 0;
-		if(y < 0) src -= y * srcwidth, srcheight += y, y = 0;
+		if(x < 0) srcx = -x, srcwidth += x, x = 0;
+		if(y < 0) srcy = -y, srcheight += y, y = 0;
 		if((srcwidth > 0) && (srcheight > 0))
 		{
+			src += srcx + srcy * m_width;
 			dst += x + dstwidth * y;
 			for(int i = 0; i < srcheight; i++)
 			{
@@ -170,14 +169,13 @@ void skel::Surface::CopyTo(int x, int y, Surface* d) const
 			}
 		}
 	}
-	d->m_dirty = true;
+	d.m_dirty = true;
 }
 
-void skel::Surface::CopyTo(const int2& p, Surface* d) const
+void skel::Surface::CopyTo(const int2& p, Surface& d) const
 {
 	CopyTo(p.x, p.y, d);
 }
-
 
 void skel::Surface::Rectangle(const int x1, const int y1, const int x2, const int y2, const uint color, int strokeWidth)
 {
@@ -196,7 +194,6 @@ void skel::Surface::Rectangle(const int x1, const int y1, const int x2, const in
 	const int x2c = std::min(x2s, m_width - 1);
 	const int y1c = std::max(y1s, 0);
 	const int y2c = std::min(y2s, m_height - 1);
-
 
 	if(strokeWidth == 0)
 	{
@@ -217,7 +214,6 @@ void skel::Surface::Rectangle(const int x1, const int y1, const int x2, const in
 	Rectangle(x1s, y1s, x2s, y1s + strokeWidth - 1, color, 0);
 
 	Rectangle(x1s, y2s - strokeWidth + 1, x2s, y2s, color, 0);
-
 
 	Rectangle(x1s, y1s + strokeWidth - 1, x1s + strokeWidth - 1, y2s - strokeWidth + 1, color, 0);
 	Rectangle(x2s - strokeWidth + 1, y1s + strokeWidth - 1, x2s, y2s - strokeWidth + 1, color, 0);
@@ -240,7 +236,6 @@ void skel::Surface::Circle(const int cx, const int cy, const int radius, const u
 		return;
 	}
 	if(radius < 0) return;
-
 
 	if(strokeWidth > radius)
 		strokeWidth = 0;
@@ -273,7 +268,6 @@ void skel::Surface::Circle(const int cx, const int cy, const int radius, const u
 	// Initialising the value of P
 	int p = 1 - radius;
 
-
 	for(int i = 0; i <= strokeWidth; i++)
 	{
 		drawOctants(radius - i, 0, color, cx, cy);
@@ -299,13 +293,11 @@ void skel::Surface::Circle(const int cx, const int cy, const int radius, const u
 		if(x < y)
 			break;
 
-
 		for(int i = 0; i <= strokeWidth; i++)
 		{
 			drawOctants(x - i, y, color, cx, cy);
 		}
 	}
-
 
 	if(strokeWidth == 0 || strokeWidth > radius)
 		return;
@@ -340,7 +332,6 @@ void skel::Surface::Circle(const int cx, const int cy, const int radius, const u
 		if(x < y)
 			break;
 
-
 		for(int i = 0; i <= strokeWidth; i++)
 		{
 			drawOctants(x + i, y, color, cx, cy);
@@ -355,7 +346,6 @@ void skel::Surface::Circle(const int2& center, const int radius, const uint colo
 {
 	Circle(center.x, center.y, radius, color, strokeWidth);
 }
-
 
 void skel::Surface::UpdateGPUTexture()
 {

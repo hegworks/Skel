@@ -16,7 +16,7 @@ void skel::InputManager::UpdateMousePosition(const int2& mousePos)
 	int window_x, window_y;
 	glfwGetWindowPos(Engine::GetInstance().GetGLFWWindow(), &window_x, &window_y);
 
-	if (const ImGuiWindow* window = ImGui::FindWindowByName("Viewport"))
+	if(const ImGuiWindow* window = ImGui::FindWindowByName("Viewport"))
 	{
 		viewPosition -= int2(static_cast<int>(window->Pos.x - window_x), static_cast<int>(window->Pos.y - window_y));
 		viewPosition.x = std::clamp(viewPosition.x, 0, static_cast<int>(window->Size.x));
@@ -24,8 +24,6 @@ void skel::InputManager::UpdateMousePosition(const int2& mousePos)
 	}
 
 	const int2 localPosition = viewport.PanelToRenderTargetCoords(viewPosition);
-
-
 
 	m_mouseRawDelta = m_mouseRawPosition - rawPosition;
 	m_mouseRawPosition = rawPosition;
@@ -35,7 +33,8 @@ void skel::InputManager::UpdateMousePosition(const int2& mousePos)
 
 	m_mouseDelta = m_mousePosition - localPosition;
 	m_mousePosition = localPosition;
-
+	m_mousePosition.x = std::max(0, m_mousePosition.x);
+	m_mousePosition.y = std::max(0, m_mousePosition.y);
 }
 
 void skel::InputManager::HandleKeyDown(const int key)
@@ -60,25 +59,25 @@ void skel::InputManager::HandleMouseUp(const int button)
 
 void skel::InputManager::Update(float deltaTime)
 {
-	for (auto& key : m_keys)
+	for(auto& key : m_keys)
 	{
-		if (key == KeyState::Just_Down)
+		if(key == KeyState::Just_Down)
 		{
 			key = KeyState::Down;
 		}
-		else if (key == KeyState::Just_Up)
+		else if(key == KeyState::Just_Up)
 		{
 			key = KeyState::Up;
 		}
 	}
 
-	for (auto& button : m_mouseButtons)
+	for(auto& button : m_mouseButtons)
 	{
-		if (button == KeyState::Just_Down)
+		if(button == KeyState::Just_Down)
 		{
 			button = KeyState::Down;
 		}
-		else if (button == KeyState::Just_Up)
+		else if(button == KeyState::Just_Up)
 		{
 			button = KeyState::Up;
 		}

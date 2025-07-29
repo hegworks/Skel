@@ -1,10 +1,9 @@
 #pragma once
 #include <cstdint>
 
-using uchar = uint8_t;   // unsigned 8-bit
+using uchar = uint8_t; // unsigned 8-bit
 using ushort = uint16_t; // unsigned 16-bit
-using uint = uint32_t;   // unsigned 32-bit
-
+using uint = uint32_t; // unsigned 32-bit
 
 #include <iostream>
 #include <memory>
@@ -22,10 +21,9 @@ using uint = uint32_t;   // unsigned 32-bit
 
 #include <deque>
 
-
-
 #include "imgui.h"
 
 #include "Core/Logger.h"
 #include "Math/SkelMath.h"
 
+using namespace skel;
