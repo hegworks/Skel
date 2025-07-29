@@ -19,7 +19,8 @@ project "Game"
         "../external/GLFW/include",
         "../external/glad/include",
         "../external/spdlog/include", 
-        "../external/imgui", 
+        "../external/imgui",
+        "../external/glm",
     }
 
     links {

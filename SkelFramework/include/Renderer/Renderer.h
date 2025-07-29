@@ -1,4 +1,5 @@
 #pragma once
+#include "Camera2D.h"
 
 namespace skel
 {
@@ -20,6 +21,7 @@ namespace skel
 
 		void Clear(const float4& color);
 		void BlitSurface(Surface& surface, int x, int y);
+		void BlitSurface(Surface& surface, int x, int y, const Camera2D& camera2D);
 
 
 		uint32_t GetOutputTexture() const { return m_colorTexture; }

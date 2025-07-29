@@ -6,25 +6,25 @@
 
 #include "Renderer/Surface.h"
 
-static const char* vertexSrc = R"(
-    #version 330 core
-    layout(location = 0) in vec2 aPos;
-    layout(location = 1) in vec2 aTex;
+static const char* vertexSrc =
+	R"(
+#version 330 core
+layout(location = 0) in vec2 aPos;
+layout(location = 1) in vec2 aTex;
 
-    out vec2 TexCoord;
+out vec2 TexCoord;
 
-    uniform vec2 uPosition;
-    uniform vec2 uSize;
-    uniform vec2 uScreenSize;
+uniform vec2 uPosition;
+uniform vec2 uSize;
+uniform mat4 uViewProjection;
 
-    void main()
-    {
-        vec2 pos = aPos * uSize + uPosition;
-        vec2 ndc = (pos / uScreenSize) * 2.0 - 1.0;
-        gl_Position = vec4(ndc * vec2(1, -1), 0.0, 1.0);
-        TexCoord = aTex;
-    }
-)";
+void main()
+{
+    vec2 worldPos = aPos * uSize + uPosition;
+    gl_Position = uViewProjection * vec4(worldPos, 0.0, 1.0);
+    TexCoord = aTex;
+}
+	)";
 
 static const char* fragmentSrc = R"(
     #version 330 core
@@ -185,6 +185,32 @@ void skel::Renderer::BlitSurface(Surface& surface, const int x, const int y)
 	glUniform2f(glGetUniformLocation(m_shader, "uPosition"), static_cast<float>(x), static_cast<float>(y));
 	glUniform2f(glGetUniformLocation(m_shader, "uSize"), static_cast<float>(surface.GetWidth()), static_cast<float>(surface.GetHeight()));
 	glUniform2f(glGetUniformLocation(m_shader, "uScreenSize"), static_cast<float>(m_width), static_cast<float>(m_height));
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, surface.GetTextureID());
+	glUniform1i(glGetUniformLocation(m_shader, "uTexture"), 0);
+
+	glBindVertexArray(m_quadVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+}
+
+void Renderer::BlitSurface(Surface& surface, int x, int y, const Camera2D& camera2D)
+{
+	const uint surfaceTexture = surface.GetTextureID();
+
+	if(surfaceTexture == 0)
+	{
+		SKEL_CORE_WARN("Tried to blit a surface, however the surface does not have a GPUTexture");
+		return;
+	}
+
+	glUseProgram(m_shader);
+
+	glUniform2f(glGetUniformLocation(m_shader, "uPosition"), static_cast<float>(x), static_cast<float>(y));
+	glUniform2f(glGetUniformLocation(m_shader, "uSize"), static_cast<float>(surface.GetWidth()), static_cast<float>(surface.GetHeight()));
+	// glUniform2f(glGetUniformLocation(m_shader, "uScreenSize"), static_cast<float>(m_width), static_cast<float>(m_height));
+	const glm::mat4 vp = camera2D.GetViewProjectionMatrix();
+	glUniformMatrix4fv(glGetUniformLocation(m_shader, "uViewProjection"), 1, GL_FALSE, &vp[0][0]);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, surface.GetTextureID());

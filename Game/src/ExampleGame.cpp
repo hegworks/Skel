@@ -30,6 +30,7 @@ void ExampleGame::Initialize()
 	// Engine::GetInstance().GetConsole().SetEnabled(false);
 
 	m_screen = std::make_unique<Surface>(renderer.GetWidth(), renderer.GetHeight(), true);
+	m_camera2D = std::make_unique<Camera2D>(0, renderer.GetWidth(), 0, renderer.GetHeight());
 
 	m_testImage = std::make_unique<Surface>("assets/testAsset.png", false);
 	ballSize = {m_testImage->GetWidth(), m_testImage->GetHeight()};
@@ -54,18 +55,20 @@ void ExampleGame::Update(const float deltaTime)
 	if(input.GetScrollDelta() > 0)
 	{
 		m_circleRadius++;
+		m_camera2D->Zoom(+0.1f);
 	}
 	else if(input.GetScrollDelta() < 0)
 	{
 		m_circleRadius--;
+		m_camera2D->Zoom(-0.1f);
 	}
 
 	m_circleRadius = std::max(0, m_circleRadius);
 
-	if(input.IsKeyDown(GLFW_KEY_RIGHT)) ballVel.x += 200.f * deltaTime;
-	if(input.IsKeyDown(GLFW_KEY_LEFT)) ballVel.x -= 200.f * deltaTime;
-	if(input.IsKeyDown(GLFW_KEY_UP)) ballVel.y -= 200.f * deltaTime;
-	if(input.IsKeyDown(GLFW_KEY_DOWN)) ballVel.y += 200.f * deltaTime;
+	if(input.IsKeyDown(GLFW_KEY_RIGHT)) ballVel.x += 200.f * deltaTime, m_camera2D->Pan({-1, 0});
+	if(input.IsKeyDown(GLFW_KEY_LEFT)) ballVel.x -= 200.f * deltaTime, m_camera2D->Pan({1, 0});
+	if(input.IsKeyDown(GLFW_KEY_UP)) ballVel.y -= 200.f * deltaTime, m_camera2D->Pan({0, 1});
+	if(input.IsKeyDown(GLFW_KEY_DOWN)) ballVel.y += 200.f * deltaTime, m_camera2D->Pan({0, -1});
 
 	ballPos += ballVel * deltaTime;
 
@@ -109,7 +112,7 @@ void ExampleGame::Render(Renderer& renderer)
 
 	m_screen->Line(m_screen->GetWidth() / 2, m_screen->GetHeight() / 2, input.GetMousePosition().x, input.GetMousePosition().y, 0xffff0000);
 	m_tileSheet->DrawTile(*m_screen, int2(100, 100), 5);
-	renderer.BlitSurface(*m_screen, 0, 0);
+	renderer.BlitSurface(*m_screen, 0, 0, *m_camera2D);
 
 	// renderer.BlitSurface(*m_btn, btnPos.x, btnPos.y);
 }
