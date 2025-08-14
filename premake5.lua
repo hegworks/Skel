@@ -1,4 +1,4 @@
-workspace "Skel"
+workspace "UpgradeTree"
     architecture "x86_64"
     startproject "Game"
 

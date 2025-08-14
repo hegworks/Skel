@@ -8,25 +8,26 @@
 
 static const char* vertexSrc =
 	R"(
-#version 330 core
-layout(location = 0) in vec2 aPos;
-layout(location = 1) in vec2 aTex;
+	#version 330 core
+	layout(location = 0) in vec2 aPos;
+	layout(location = 1) in vec2 aTex;
 
-out vec2 TexCoord;
+	out vec2 TexCoord;
 
-uniform vec2 uPosition;
-uniform vec2 uSize;
-uniform mat4 uViewProjection;
+	uniform vec2 uPosition;
+	uniform vec2 uSize;
+	uniform mat4 uViewProjection;
 
-void main()
-{
-    vec2 worldPos = aPos * uSize + uPosition;
-    gl_Position = uViewProjection * vec4(worldPos, 0.0, 1.0);
-    TexCoord = aTex;
-}
+	void main()
+	{
+	    vec2 worldPos = aPos * uSize + uPosition;
+	    gl_Position = uViewProjection * vec4(worldPos, 0.0, 1.0);
+	    TexCoord = aTex;
+	}
 	)";
 
-static const char* fragmentSrc = R"(
+static const char* fragmentSrc =
+	R"(
     #version 330 core
     out vec4 FragColor;
 
@@ -37,7 +38,7 @@ static const char* fragmentSrc = R"(
     {
         FragColor = texture(uTexture, TexCoord);
     }
-)";
+	)";
 
 static GLuint CompileShader(GLenum type, const char* src)
 {

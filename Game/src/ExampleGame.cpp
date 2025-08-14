@@ -30,7 +30,9 @@ void ExampleGame::Initialize()
 	// Engine::GetInstance().GetConsole().SetEnabled(false);
 
 	m_screen = std::make_unique<Surface>(renderer.GetWidth(), renderer.GetHeight(), true);
+	m_bgSurface = std::make_unique<Surface>(renderer.GetWidth(), renderer.GetHeight(), true);
 	m_camera2D = std::make_unique<Camera2D>(0, renderer.GetWidth(), 0, renderer.GetHeight());
+	m_bgCamera2D = std::make_unique<Camera2D>(0, renderer.GetWidth(), 0, renderer.GetHeight());
 
 	m_testImage = std::make_unique<Surface>("assets/testAsset.png", false);
 	ballSize = {m_testImage->GetWidth(), m_testImage->GetHeight()};
@@ -44,8 +46,18 @@ void ExampleGame::Initialize()
 	m_btnTile = std::make_unique<CPUTileSheet>("assets/btn.png", int2(138, 141));
 	m_btnSurface = std::make_unique<Surface>("assets/btn.png", true);
 
-	// std::shared_ptr<UIPanel> uiTest = std::make_shared<UITest>();
-	// Engine::GetInstance().GetUIManager().RegisterPanel(uiTest);
+	int cols = int(ceil(float(m_bgSurface->GetWidth()) / float(m_testImage->GetWidth())));
+	int rows = int(ceil(float(m_bgSurface->GetHeight()) / float(m_testImage->GetHeight())));
+	for(int row = 0; row < rows; ++row)
+	{
+		for(int col = 0; col < cols; ++col)
+		{
+			m_testImage->CopyTo(col * m_testImage->GetWidth(), row * m_testImage->GetHeight(), *m_bgSurface);
+		}
+	}
+
+	std::shared_ptr<UIPanel> uiTest = std::make_shared<UITest>();
+	Engine::GetInstance().GetUIManager().RegisterPanel(uiTest);
 }
 
 void ExampleGame::Update(const float deltaTime)
@@ -112,6 +124,7 @@ void ExampleGame::Render(Renderer& renderer)
 
 	m_screen->Line(m_screen->GetWidth() / 2, m_screen->GetHeight() / 2, input.GetMousePosition().x, input.GetMousePosition().y, 0xffff0000);
 	m_tileSheet->DrawTile(*m_screen, int2(100, 100), 5);
+	renderer.BlitSurface(*m_bgSurface, 0, 0, *m_bgCamera2D);
 	renderer.BlitSurface(*m_screen, 0, 0, *m_camera2D);
 
 	// renderer.BlitSurface(*m_btn, btnPos.x, btnPos.y);

@@ -17,7 +17,9 @@ public:
 
 private:
 	std::unique_ptr<Camera2D> m_camera2D{nullptr};
+	std::unique_ptr<Camera2D> m_bgCamera2D{nullptr};
 	std::unique_ptr<Surface> m_screen{nullptr};
+	std::unique_ptr<Surface> m_bgSurface{nullptr};
 	std::unique_ptr<Surface> m_testImage{nullptr};
 	std::unique_ptr<Surface> m_hegSurface{nullptr};
 	std::unique_ptr<Surface> m_btnSurface{nullptr};

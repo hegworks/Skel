@@ -19,6 +19,7 @@ public:
 
 	const int2& GetUsedViewportSize() const { return m_viewportSize; }
 	const int2& GetTotalViewportSize() const { return m_viewportTotalSize; }
+	const int2& GetOffset() const { return m_offset; }
 
 	int2 PanelToRenderTargetCoords(const int2& panelPos);
 private:
