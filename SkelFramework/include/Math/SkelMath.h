@@ -2,6 +2,7 @@
 
 #pragma once
 #include <cmath>
+#include <glm/glm.hpp>
 
 namespace skel
 {
@@ -348,6 +349,8 @@ namespace skel
 
 	inline int2 ToInt2(const uint2& value) { return { static_cast<int>(value.x),static_cast<int>(value.y) }; }
 	inline int2 ToInt2(const float2& value) { return { static_cast<int>(value.x),static_cast<int>(value.y) }; }
+	inline int2 ToInt2(const glm::vec2& value) { return { static_cast<int>(value.x),static_cast<int>(value.y) }; }
+	inline int2 ToInt2(const ImVec2& value) { return { static_cast<int>(value.x),static_cast<int>(value.y) }; }
 	inline int2 ToInt2Floor(const float2& value) { return { static_cast<int>(std::floor(value.x)),static_cast<int>(std::floor(value.y)) }; }
 	inline int2 ToInt2Ceil(const float2& value) { return { static_cast<int>(std::ceil(value.x)),static_cast<int>(std::ceil(value.y)) }; }
 	inline int2 ToInt2Round(const float2& value) { return { static_cast<int>(std::round(value.x)),static_cast<int>(std::round(value.y)) }; }
@@ -360,6 +363,7 @@ namespace skel
 
 	inline float2 ToFloat2(const int2& value) { return { static_cast<float>(value.x),static_cast<float>(value.y) }; }
 	inline float2 ToFloat2(const uint2& value) { return { static_cast<float>(value.x),static_cast<float>(value.y) }; }
+	inline float2 ToFloat2(const glm::vec2& value) { return { static_cast<float>(value.x),static_cast<float>(value.y) }; }
 
 
 

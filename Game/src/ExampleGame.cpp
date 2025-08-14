@@ -32,7 +32,7 @@ void ExampleGame::Initialize()
 	m_screen = std::make_unique<Surface>(renderer.GetWidth(), renderer.GetHeight(), true);
 	m_bgSurface = std::make_unique<Surface>(renderer.GetWidth(), renderer.GetHeight(), true);
 	m_camera2D = std::make_unique<Camera2D>(0, renderer.GetWidth(), 0, renderer.GetHeight());
-	m_bgCamera2D = std::make_unique<Camera2D>(0, renderer.GetWidth(), 0, renderer.GetHeight());
+	m_staticCamera2D = std::make_unique<Camera2D>(0, renderer.GetWidth(), 0, renderer.GetHeight());
 
 	m_testImage = std::make_unique<Surface>("assets/testAsset.png", false);
 	ballSize = {m_testImage->GetWidth(), m_testImage->GetHeight()};
@@ -116,15 +116,36 @@ void ExampleGame::Render(Renderer& renderer)
 	m_screen->Circle(static_cast<int>(ballPos.x + ballSize.x / 2), static_cast<int>(ballPos.y + ballSize.y / 2), m_circleRadius, 0xffFFCF56, 1);
 	// renderer.BlitSurface(m_hegSurface.get(), 0, 0);
 
-	int2 btnPos = input.GetMousePosition() - (m_btnTile->GetCellSize() / 2);
-
 	// m_btnTile->DrawTile(*m_screen, btnPos, 0);
 
+	const float2 camPos = ToFloat2(m_camera2D->GetPosition());
+	const float2 screenSize = ToFloat2(m_screen->GetSize());
+	const float2 screenCenterF = screenSize / 2.0f;
+	const float2 mouseRawPos = ToFloat2(input.GetMousePosition());
+	const float2 mouseRelPos = mouseRawPos - screenCenterF;
+	const float2 worldOffset = mouseRelPos / m_camera2D->GetZoom();
+	const float2 dstF = camPos + worldOffset + screenCenterF;
+
+	const int2 dstI = ToInt2Floor(dstF);
+	const int2 screenCenterI = ToInt2Floor(screenCenterF);
+
+	if(input.IsMouseJustDown(0))
+	{
+		SKEL_INFO("screenCenterI: {},{}", int(screenCenterI.x), int(screenCenterI.y));
+		SKEL_INFO("MouseRawPos: {},{}", int(mouseRawPos.x), int(mouseRawPos.y));
+		SKEL_INFO("mouseRelPos: {},{}", int(mouseRelPos.x), int(mouseRelPos.y));
+		SKEL_INFO("worldOffset: {},{}", int(worldOffset.x), int(worldOffset.y));
+		SKEL_INFO("CamPos: {},{}", int(camPos.x), int(camPos.y));
+		SKEL_INFO("Zoom: {}", m_camera2D->GetZoom());
+		SKEL_INFO("DstI: {},{}", dstI.x, dstI.y);
+	}
+	m_screen->Line(screenCenterI.x, screenCenterI.y, dstI.x, dstI.y, 0xffff0000);
+
+	int2 btnPos = dstI - (m_btnTile->GetCellSize() / 2);
 	m_btnSurface->CopyTo(btnPos, *m_screen);
 
-	m_screen->Line(m_screen->GetWidth() / 2, m_screen->GetHeight() / 2, input.GetMousePosition().x, input.GetMousePosition().y, 0xffff0000);
 	m_tileSheet->DrawTile(*m_screen, int2(100, 100), 5);
-	renderer.BlitSurface(*m_bgSurface, 0, 0, *m_bgCamera2D);
+	renderer.BlitSurface(*m_bgSurface, 0, 0, *m_staticCamera2D);
 	renderer.BlitSurface(*m_screen, 0, 0, *m_camera2D);
 
 	// renderer.BlitSurface(*m_btn, btnPos.x, btnPos.y);
