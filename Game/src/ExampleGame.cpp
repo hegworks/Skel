@@ -118,36 +118,37 @@ void ExampleGame::Render(Renderer& renderer)
 
 	// m_btnTile->DrawTile(*m_screen, btnPos, 0);
 
-	const float2 camPos = ToFloat2(m_camera2D->GetPosition());
-	const float2 screenSize = ToFloat2(m_screen->GetSize());
-	const float2 screenHalfSizeF = screenSize / 2.0f;
-	const float2 mouseRawPos = ToFloat2(input.GetMousePosition());
-	const float2 mouseRelPos = mouseRawPos - screenHalfSizeF;
-	const float2 worldOffset = mouseRelPos / m_camera2D->GetZoom();
-	const float2 dstF = camPos + worldOffset + screenHalfSizeF;
-
+	const float2 dstF = WindowCoordToScreenSurface(ToFloat2(input.GetMousePosition()));
+	const float2 screenHalfSizeF = ToFloat2(m_screen->GetSize() / 2.0f);
 	const int2 dstI = ToInt2Floor(dstF);
 	const int2 screenHalfSizeI = ToInt2Floor(screenHalfSizeF);
 
-	if(input.IsMouseJustDown(0))
-	{
-		SKEL_INFO("screenCenterI: {},{}", int(screenHalfSizeI.x), int(screenHalfSizeI.y));
-		SKEL_INFO("MouseRawPos: {},{}", int(mouseRawPos.x), int(mouseRawPos.y));
-		SKEL_INFO("mouseRelPos: {},{}", int(mouseRelPos.x), int(mouseRelPos.y));
-		SKEL_INFO("worldOffset: {},{}", int(worldOffset.x), int(worldOffset.y));
-		SKEL_INFO("CamPos: {},{}", int(camPos.x), int(camPos.y));
-		SKEL_INFO("Zoom: {}", m_camera2D->GetZoom());
-		SKEL_INFO("DstI: {},{}", dstI.x, dstI.y);
-		SKEL_INFO("---------------------");
-	}
+	// if(input.IsMouseJustDown(0))
+	// {
+	// 	SKEL_INFO("screenCenterI: {},{}", int(screenHalfSizeI.x), int(screenHalfSizeI.y));
+	// 	SKEL_INFO("Zoom: {}", m_camera2D->GetZoom());
+	// 	SKEL_INFO("DstI: {},{}", dstI.x, dstI.y);
+	// 	SKEL_INFO("---------------------");
+	// }
 	m_screen->Line(screenHalfSizeI.x, screenHalfSizeI.y, dstI.x, dstI.y, 0xffff0000);
 
 	int2 btnPos = dstI - (m_btnTile->GetCellSize() / 2);
-	// m_btnSurface->CopyTo(btnPos, *m_screen);
+	m_btnSurface->CopyTo(btnPos, *m_screen);
 
 	m_tileSheet->DrawTile(*m_screen, int2(100, 100), 5);
 	renderer.BlitSurface(*m_bgSurface, 0, 0, *m_staticCamera2D);
 	renderer.BlitSurface(*m_screen, 0, 0, *m_camera2D);
 
 	// renderer.BlitSurface(*m_btn, btnPos.x, btnPos.y);
+}
+
+/// transform mousePos in window space to screenSurface space based on camera
+float2 ExampleGame::WindowCoordToScreenSurface(const float2& windowCoord) const
+{
+	const float2 camPos = ToFloat2(m_camera2D->GetPosition());
+	const float2 screenHalfSizeF = ToFloat2(m_screen->GetSize() / 2.0f);
+	const float2 dstF =
+		(windowCoord - screenHalfSizeF) / m_camera2D->GetZoom() +
+		screenHalfSizeF + camPos;
+	return dstF;
 }

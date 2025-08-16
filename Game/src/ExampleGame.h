@@ -14,6 +14,8 @@ public:
 	void Initialize() override;
 	void Update(float deltaTime) override;
 	void Render(Renderer& renderer) override;
+	
+	float2 WindowCoordToScreenSurface(const float2& windowCoord) const;
 
 private:
 	std::unique_ptr<Camera2D> m_camera2D{nullptr};
