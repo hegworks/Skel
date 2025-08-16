@@ -9,7 +9,6 @@
 #include "UI/UIManager.h"
 #include "UI/StatPanel.h"
 
-
 namespace skel
 {
 	class ConsolePanel;
@@ -17,25 +16,23 @@ namespace skel
 
 	struct EngineInitValues
 	{
-		std::string windowTitle{ "Skel App" };
+		std::string windowTitle{"Skel App"};
 
-		int startupWindowWidth{ 800 };
-		int startupWindowHeight{ 600 };
+		int startupWindowWidth{800};
+		int startupWindowHeight{600};
 		//bool startFullscreen{ false }; currently we don't handle fullscreen yet.
 
+		int rendererWidth{800};
+		int rendererHeight{600};
+		bool vsyncEnabled{false};
 
-		int  rendererWidth{ 800 };
-		int  rendererHeight{ 600 };
-		bool vsyncEnabled{ false };
+		bool showConsolePanelOnStartup{true};
+		bool showStatsPanelOnStartup{true};
+		bool detailedConsoleLogs{true};
 
-
-		bool showConsolePanelOnStartup{ true };
-		bool showStatsPanelOnStartup{ true };
-
-		int consoleToggleKey{ GLFW_KEY_GRAVE_ACCENT };	// set to 0 to disable
+		int consoleToggleKey{GLFW_KEY_GRAVE_ACCENT}; // set to 0 to disable
+		int consoleDetailToggleKey{GLFW_KEY_F1}; // set to 0 to disable
 	};
-	
-
 
 	class Engine
 	{
@@ -49,9 +46,7 @@ namespace skel
 			return instance;
 		}
 
-
 		void Run(GameBase& game);
-
 
 		// API STUFF
 
@@ -71,19 +66,14 @@ namespace skel
 		const InputManager& GetInput() const { return m_inputManager; }
 		InputManager& GetInput() { return m_inputManager; }
 
-
-
 		GLFWwindow* GetGLFWWindow() { return m_window; }
 
 		// Callbacks
 
 		void OnFramebufferResize(int width, int height);
-	
-
 
 	private:
 		Engine() = default;
-		
 
 	private:
 		int Initialize();
@@ -92,20 +82,20 @@ namespace skel
 
 		void RegisterDefaultCommands();
 
-
 		void ShutdownGLFW();
 
-		GLFWwindow* m_window{ nullptr };
+		GLFWwindow* m_window{nullptr};
 
 		int m_windowWidth{800};
 		int m_windowHeight{600};
 		bool m_VSyncEnabled{false};
 
-		bool m_shouldClose{ false };
+		bool m_shouldClose{false};
 
-		int m_consoleToggleKey{ 0 };
+		int m_consoleToggleKey{0};
+		int m_consoleDetailToggleKey{0};
 
-		GameBase* m_game{ nullptr };
+		GameBase* m_game{nullptr};
 
 		float m_deltaTimeNonClamped{0.f};
 
@@ -115,17 +105,12 @@ namespace skel
 
 		UIManager m_uiManager;
 
-		Renderer* m_renderer{ nullptr };
+		Renderer* m_renderer{nullptr};
 		std::shared_ptr<ViewportPanel> m_viewportPanel{nullptr};
-		std::shared_ptr<ConsolePanel> m_console{ nullptr };
-		std::shared_ptr<StatPanel> m_statsPanel{ nullptr };
+		std::shared_ptr<ConsolePanel> m_console{nullptr};
+		std::shared_ptr<StatPanel> m_statsPanel{nullptr};
 	};
-
-
-
-
 }
-
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
