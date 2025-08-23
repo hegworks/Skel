@@ -32,6 +32,16 @@ void skel::Engine::Run(GameBase& game)
 			m_console->ToggleDetailedFormat();
 			SKEL_CORE_INFO("Console Detail Changed To: {}", m_console->GetDetailState());
 		}
+		if(m_fullscreenToggleKey != 0 && m_inputManager.IsKeyJustDown(m_fullscreenToggleKey, true))
+		{
+			ToggleFullscreen();
+			SKEL_CORE_INFO("Fullscreen mode changed to: {}", m_isFullscreen);
+		}
+		if(m_closeAppKey != 0 && m_inputManager.IsKeyJustDown(m_closeAppKey, true))
+		{
+			m_shouldClose = true;
+			SKEL_CORE_INFO("CloseAppKey pressed. Exiting...");
+		}
 
 		game.Update(deltaTime);
 
@@ -68,11 +78,17 @@ void skel::Engine::OnFramebufferResize(const int width, const int height)
 
 int skel::Engine::Initialize()
 {
+	m_startupSettings = m_game->GetStartupSettings();
+
 	Log::Init();
 	m_console = std::make_shared<ConsolePanel>();
+	if(m_startupSettings.detailedConsoleLogs == false)
+	{
+		m_console->ToggleDetailedFormat();
+	}
 
-	m_windowWidth = m_game->GetStartupSettings().startupWindowWidth;
-	m_windowHeight = m_game->GetStartupSettings().startupWindowHeight;
+	m_windowWidth = m_startupSettings.startupWindowWidth;
+	m_windowHeight = m_startupSettings.startupWindowHeight;
 
 	SKEL_CORE_INFO("--------------------------------------");
 	SKEL_CORE_INFO("|          SKEL FRAMEWORK v1.0       |");
@@ -131,11 +147,13 @@ int skel::Engine::Initialize()
 
 	SKEL_CORE_INFO("[Window] " + std::to_string(width) + " x " + std::to_string(height) + " | " + mode);
 
-	m_consoleToggleKey = m_game->GetStartupSettings().consoleToggleKey;
-	m_consoleDetailToggleKey = m_game->GetStartupSettings().consoleDetailToggleKey;
+	m_consoleToggleKey = m_startupSettings.consoleToggleKey;
+	m_consoleDetailToggleKey = m_startupSettings.consoleDetailToggleKey;
+	m_fullscreenToggleKey = m_startupSettings.fullscreenToggleKey;
+	m_closeAppKey = m_startupSettings.closeAppKey;
 
 	m_uiManager.Initialize(m_window);
-	m_renderer = new Renderer(m_game->GetStartupSettings().rendererWidth, m_game->GetStartupSettings().rendererHeight);
+	m_renderer = new Renderer(m_startupSettings.rendererWidth, m_startupSettings.rendererHeight);
 	m_viewportPanel = std::make_shared<ViewportPanel>();
 	m_viewportPanel->Initialize(m_renderer);
 
@@ -144,9 +162,9 @@ int skel::Engine::Initialize()
 	m_uiManager.RegisterPanel(m_console);
 	m_uiManager.RegisterPanel(m_statsPanel);
 	m_uiManager.RegisterPanel(m_viewportPanel);
-	m_statsPanel->SetEnabled(m_game->GetStartupSettings().showStatsPanelOnStartup);
+	m_statsPanel->SetEnabled(m_startupSettings.showStatsPanelOnStartup);
 
-	m_console->SetEnabled(m_game->GetStartupSettings().showConsolePanelOnStartup);
+	m_console->SetEnabled(m_startupSettings.showConsolePanelOnStartup);
 
 	SKEL_CORE_INFO("[RenderTarget] " + std::to_string(m_renderer->GetWidth()) + " x " + std::to_string(m_renderer->GetHeight()));
 
@@ -167,8 +185,8 @@ int skel::Engine::InitializeGLFW()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	m_window = glfwCreateWindow(m_windowWidth, m_windowHeight, m_game->GetStartupSettings().windowTitle.c_str(), nullptr, nullptr);
-	glfwSetWindowPos(m_window, 50, 75);
+	m_window = glfwCreateWindow(m_windowWidth, m_windowHeight, m_startupSettings.windowTitle.c_str(), nullptr, nullptr);
+	glfwSetWindowPos(m_window, m_startupSettings.startupWindowPosX, m_startupSettings.startupWindowPosY);
 	if(m_window == nullptr)
 	{
 		SKEL_CORE_CRITICAL("Failed to create GLFW m_window");
@@ -187,7 +205,11 @@ int skel::Engine::InitializeGLFW()
 
 	glViewport(0, 0, m_windowWidth, m_windowHeight);
 
-	EnableVSync(m_game->GetStartupSettings().vsyncEnabled);
+	EnableVSync(m_startupSettings.vsyncEnabled);
+	if(m_startupSettings.startFullscreen)
+	{
+		ToggleFullscreen();
+	}
 
 	// setting call backs
 	glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
@@ -304,6 +326,23 @@ void skel::Engine::RegisterDefaultCommands()
 void skel::Engine::ShutdownGLFW()
 {
 	glfwTerminate();
+}
+
+void Engine::ToggleFullscreen()
+{
+	m_isFullscreen = !m_isFullscreen;
+	if(m_isFullscreen)
+	{
+		glfwGetWindowPos(m_window, &m_windowPosBeforeFullScreen.x, &m_windowPosBeforeFullScreen.y);
+		glfwGetWindowSize(m_window, &m_windowSizeBeforeFullScreen.x, &m_windowSizeBeforeFullScreen.y);
+		GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+		glfwSetWindowMonitor(m_window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+	}
+	else
+	{
+		glfwSetWindowMonitor(m_window, nullptr, m_windowPosBeforeFullScreen.x, m_windowPosBeforeFullScreen.y, m_windowSizeBeforeFullScreen.x, m_windowSizeBeforeFullScreen.y, 0);
+	}
 }
 
 void framebuffer_size_callback(GLFWwindow* window, const int width, const int height)

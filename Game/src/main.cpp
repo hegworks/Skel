@@ -4,9 +4,8 @@
 
 int main()
 {
+	ExampleGame mainGame;
+	Engine::GetInstance().Run(mainGame);
 
-    ExampleGame mainGame;
-    Engine::GetInstance().Run(mainGame);
-
-    return 0;
+	return 0;
 }

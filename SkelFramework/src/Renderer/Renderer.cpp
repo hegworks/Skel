@@ -209,7 +209,6 @@ void Renderer::BlitSurface(Surface& surface, int x, int y, const Camera2D& camer
 
 	glUniform2f(glGetUniformLocation(m_shader, "uPosition"), static_cast<float>(x), static_cast<float>(y));
 	glUniform2f(glGetUniformLocation(m_shader, "uSize"), static_cast<float>(surface.GetWidth()), static_cast<float>(surface.GetHeight()));
-	// glUniform2f(glGetUniformLocation(m_shader, "uScreenSize"), static_cast<float>(m_width), static_cast<float>(m_height));
 	const glm::mat4 vp = camera2D.GetViewProjectionMatrix();
 	glUniformMatrix4fv(glGetUniformLocation(m_shader, "uViewProjection"), 1, GL_FALSE, &vp[0][0]);
 

@@ -14,6 +14,10 @@ namespace skel
 
 		// rendering
 
+
+		/**
+		 * @param color in ARGB format
+		 */
 		void Clear(uint color);
 
 		void Plot(int x, int y, uint color);

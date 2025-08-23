@@ -20,7 +20,9 @@ namespace skel
 
 		int startupWindowWidth{800};
 		int startupWindowHeight{600};
-		//bool startFullscreen{ false }; currently we don't handle fullscreen yet.
+		int startupWindowPosX = 0;
+		int startupWindowPosY = 0;
+		bool startFullscreen{true};
 
 		int rendererWidth{800};
 		int rendererHeight{600};
@@ -30,8 +32,10 @@ namespace skel
 		bool showStatsPanelOnStartup{true};
 		bool detailedConsoleLogs{true};
 
-		int consoleToggleKey{GLFW_KEY_GRAVE_ACCENT}; // set to 0 to disable
-		int consoleDetailToggleKey{GLFW_KEY_F1}; // set to 0 to disable
+		int consoleToggleKey{0}; // set to 0 to disable
+		int consoleDetailToggleKey{0}; // set to 0 to disable
+		int fullscreenToggleKey{0}; // set to 0 to disable
+		int closeAppKey{0}; // set to 0 to disable
 	};
 
 	class Engine
@@ -84,6 +88,10 @@ namespace skel
 
 		void ShutdownGLFW();
 
+		void ToggleFullscreen();
+
+		EngineInitValues m_startupSettings;
+
 		GLFWwindow* m_window{nullptr};
 
 		int m_windowWidth{800};
@@ -94,13 +102,17 @@ namespace skel
 
 		int m_consoleToggleKey{0};
 		int m_consoleDetailToggleKey{0};
+		int m_fullscreenToggleKey{0};
+		int m_closeAppKey{0};
+		bool m_isFullscreen = false;
+		int2 m_windowSizeBeforeFullScreen{0};
+		int2 m_windowPosBeforeFullScreen{0};
 
 		GameBase* m_game{nullptr};
 
 		float m_deltaTimeNonClamped{0.f};
 
 		// Systems
-
 		InputManager m_inputManager;
 
 		UIManager m_uiManager;
