@@ -22,10 +22,10 @@ EngineInitValues ExampleGame::GetStartupSettings()
 		.showStatsPanelOnStartup = false,
 		.detailedConsoleLogs = false,
 
-		.consoleToggleKey = GLFW_KEY_GRAVE_ACCENT, // set to 0 to disable
-		.consoleDetailToggleKey = GLFW_KEY_F1, // set to 0 to disable
-		.fullscreenToggleKey = GLFW_KEY_F11, // set to 0 to disable
-		.closeAppKey = GLFW_KEY_ESCAPE, // set to 0 to disable
+		.consoleToggleKey = GLFW_KEY_GRAVE_ACCENT, // set to GLFW_KEY_UNKNOWN to disable
+		.consoleDetailToggleKey = GLFW_KEY_F1, // set to GLFW_KEY_UNKNOWN to disable
+		.fullscreenToggleKey = GLFW_KEY_F11, // set to GLFW_KEY_UNKNOWN to disable
+		.closeAppKey = GLFW_KEY_ESCAPE, // set to GLFW_KEY_UNKNOWN to disable
 
 	};
 }

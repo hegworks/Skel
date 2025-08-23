@@ -32,10 +32,10 @@ namespace skel
 		bool showStatsPanelOnStartup{true};
 		bool detailedConsoleLogs{true};
 
-		int consoleToggleKey{0}; // set to 0 to disable
-		int consoleDetailToggleKey{0}; // set to 0 to disable
-		int fullscreenToggleKey{0}; // set to 0 to disable
-		int closeAppKey{0}; // set to 0 to disable
+		int consoleToggleKey{GLFW_KEY_UNKNOWN};
+		int consoleDetailToggleKey{GLFW_KEY_UNKNOWN};
+		int fullscreenToggleKey{GLFW_KEY_UNKNOWN};
+		int closeAppKey{GLFW_KEY_UNKNOWN};
 	};
 
 	class Engine

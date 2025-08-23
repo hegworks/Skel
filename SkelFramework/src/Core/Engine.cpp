@@ -23,21 +23,21 @@ void skel::Engine::Run(GameBase& game)
 		glfwPollEvents();
 
 		// Update game
-		if(m_consoleToggleKey != 0 && m_inputManager.IsKeyJustDown(m_consoleToggleKey, true))
+		if(m_inputManager.IsKeyJustDown(m_consoleToggleKey, true))
 		{
 			m_console->SetEnabled(!m_console->IsEnabled());
 		}
-		if(m_consoleDetailToggleKey != 0 && m_inputManager.IsKeyJustDown(m_consoleDetailToggleKey, true))
+		if(m_inputManager.IsKeyJustDown(m_consoleDetailToggleKey, true))
 		{
 			m_console->ToggleDetailedFormat();
 			SKEL_CORE_INFO("Console Detail Changed To: {}", m_console->GetDetailState());
 		}
-		if(m_fullscreenToggleKey != 0 && m_inputManager.IsKeyJustDown(m_fullscreenToggleKey, true))
+		if(m_inputManager.IsKeyJustDown(m_fullscreenToggleKey, true))
 		{
 			ToggleFullscreen();
 			SKEL_CORE_INFO("Fullscreen mode changed to: {}", m_isFullscreen);
 		}
-		if(m_closeAppKey != 0 && m_inputManager.IsKeyJustDown(m_closeAppKey, true))
+		if(m_inputManager.IsKeyJustDown(m_closeAppKey, true))
 		{
 			m_shouldClose = true;
 			SKEL_CORE_INFO("CloseAppKey pressed. Exiting...");
@@ -46,9 +46,7 @@ void skel::Engine::Run(GameBase& game)
 		game.Update(deltaTime);
 
 		m_renderer->Begin();
-
 		game.Render(*m_renderer);
-
 		m_renderer->End();
 
 		m_uiManager.BeginFrame();
