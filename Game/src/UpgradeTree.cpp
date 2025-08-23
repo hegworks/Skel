@@ -32,8 +32,6 @@ EngineInitValues UpgradeTree::GetStartupSettings()
 
 void UpgradeTree::Initialize()
 {
-	// Engine::GetInstance().GetConsole().SetEnabled(false);
-
 	const Renderer& renderer = Engine::GetInstance().GetRenderer();
 	m_screen = std::make_unique<Surface>(renderer.GetWidth(), renderer.GetHeight(), true);
 	m_bgSurface = std::make_unique<Surface>(renderer.GetWidth(), renderer.GetHeight(), true);
@@ -68,7 +66,7 @@ float2 UpgradeTree::WindowCoordToScreenSurface(const float2& windowCoord) const
 	return dstF;
 }
 
-void UpgradeTree::CameraControls()
+void UpgradeTree::CameraControls() const
 {
 	const InputManager& input = Engine::GetInstance().GetInput();
 	if(input.GetScrollDelta() > 0) m_camera2D->Zoom(+0.1f);

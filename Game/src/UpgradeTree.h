@@ -24,5 +24,5 @@ private:
 	std::unique_ptr<Surface> m_screen{nullptr};
 	std::unique_ptr<Surface> m_bgSurface{nullptr};
 
-	void CameraControls();
+	void CameraControls() const;
 };
