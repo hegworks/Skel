@@ -4,10 +4,10 @@
 #include "Renderer/Surface.h"
 #include "Renderer/Camera2D.h"
 
-class ExampleGame : public GameBase
+class UpgradeTree : public GameBase
 {
 public:
-	ExampleGame() = default;
+	UpgradeTree() = default;
 
 	EngineInitValues GetStartupSettings() override;
 

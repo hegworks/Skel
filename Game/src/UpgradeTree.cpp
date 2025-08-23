@@ -1,9 +1,9 @@
 #include "skelpch.h"
-#include "ExampleGame.h"
+#include "UpgradeTree.h"
 
 #include "UITest.h"
 
-EngineInitValues ExampleGame::GetStartupSettings()
+EngineInitValues UpgradeTree::GetStartupSettings()
 {
 	return
 	{
@@ -30,7 +30,7 @@ EngineInitValues ExampleGame::GetStartupSettings()
 	};
 }
 
-void ExampleGame::Initialize()
+void UpgradeTree::Initialize()
 {
 	// Engine::GetInstance().GetConsole().SetEnabled(false);
 
@@ -44,12 +44,12 @@ void ExampleGame::Initialize()
 	Engine::GetInstance().GetUIManager().RegisterPanel(uiTest);
 }
 
-void ExampleGame::Update(const float deltaTime)
+void UpgradeTree::Update(const float deltaTime)
 {
 	CameraControls();
 }
 
-void ExampleGame::Render(Renderer& renderer)
+void UpgradeTree::Render(Renderer& renderer)
 {
 	m_bgSurface->Clear(0);
 	m_screen->Clear(0xff555555);
@@ -58,7 +58,7 @@ void ExampleGame::Render(Renderer& renderer)
 	renderer.BlitSurface(*m_screen, 0, 0, *m_camera2D);
 }
 
-float2 ExampleGame::WindowCoordToScreenSurface(const float2& windowCoord) const
+float2 UpgradeTree::WindowCoordToScreenSurface(const float2& windowCoord) const
 {
 	const float2 camPos = ToFloat2(m_camera2D->GetPosition());
 	const float2 screenHalfSizeF = ToFloat2(m_screen->GetSize() / 2.0f);
@@ -68,7 +68,7 @@ float2 ExampleGame::WindowCoordToScreenSurface(const float2& windowCoord) const
 	return dstF;
 }
 
-void ExampleGame::CameraControls()
+void UpgradeTree::CameraControls()
 {
 	const InputManager& input = Engine::GetInstance().GetInput();
 	if(input.GetScrollDelta() > 0) m_camera2D->Zoom(+0.1f);
