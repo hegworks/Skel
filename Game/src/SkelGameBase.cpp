@@ -1,9 +1,9 @@
 #include "skelpch.h"
-#include "UpgradeTree.h"
+#include "SkelGameBase.h"
 
 #include "UITest.h"
 
-EngineInitValues UpgradeTree::GetStartupSettings()
+EngineInitValues SkelGameBase::GetStartupSettings()
 {
 	return
 	{
@@ -12,10 +12,10 @@ EngineInitValues UpgradeTree::GetStartupSettings()
 		.startupWindowHeight = 900,
 		.startupWindowPosX = 50,
 		.startupWindowPosY = 75,
-		.startFullscreen = true,
+		.startFullscreen = false,
 
-		.rendererWidth = 800,
-		.rendererHeight = 450,
+		.rendererWidth = 1920,
+		.rendererHeight = 1080,
 
 		.vsyncEnabled = false,
 
@@ -30,7 +30,7 @@ EngineInitValues UpgradeTree::GetStartupSettings()
 	};
 }
 
-void UpgradeTree::Initialize()
+void SkelGameBase::Initialize()
 {
 	const Renderer& renderer = Engine::GetInstance().GetRenderer();
 	m_screen = std::make_unique<Surface>(renderer.GetWidth(), renderer.GetHeight(), true);
@@ -40,23 +40,29 @@ void UpgradeTree::Initialize()
 
 	const std::shared_ptr<UIPanel> uiTest = std::make_shared<UITest>();
 	Engine::GetInstance().GetUIManager().RegisterPanel(uiTest);
+
+	m_upgradeTree = UpgradeTree::GetInstance();
+	m_upgradeTree->Initialize(m_screen.get(), this);
 }
 
-void UpgradeTree::Update(const float deltaTime)
+void SkelGameBase::Update(const float deltaTime)
 {
 	CameraControls();
+	m_upgradeTree->Update(deltaTime);
 }
 
-void UpgradeTree::Render(Renderer& renderer)
+void SkelGameBase::Render(Renderer& renderer)
 {
-	m_bgSurface->Clear(0);
+	m_bgSurface->Clear(0xffcccccc);
 	m_screen->Clear(0xff555555);
+
+	m_upgradeTree->Draw();
 
 	renderer.BlitSurface(*m_bgSurface, 0, 0, *m_staticCamera2D);
 	renderer.BlitSurface(*m_screen, 0, 0, *m_camera2D);
 }
 
-float2 UpgradeTree::WindowCoordToScreenSurface(const float2& windowCoord) const
+float2 SkelGameBase::WindowCoordToScreenSurface(const float2& windowCoord) const
 {
 	const float2 camPos = ToFloat2(m_camera2D->GetPosition());
 	const float2 screenHalfSizeF = ToFloat2(m_screen->GetSize() / 2.0f);
@@ -66,11 +72,12 @@ float2 UpgradeTree::WindowCoordToScreenSurface(const float2& windowCoord) const
 	return dstF;
 }
 
-void UpgradeTree::CameraControls() const
+void SkelGameBase::CameraControls() const
 {
 	const InputManager& input = Engine::GetInstance().GetInput();
-	if(input.GetScrollDelta() > 0) m_camera2D->Zoom(+0.1f);
-	if(input.GetScrollDelta() < 0) m_camera2D->Zoom(-0.1f);
+	const float zoom = m_camera2D->GetZoom();
+	if(input.GetScrollDelta() > 0) m_camera2D->SetZoom(zoom + zoom * 0.1f);
+	if(input.GetScrollDelta() < 0) m_camera2D->SetZoom(zoom - zoom * 0.1f);
 	if(input.IsKeyDown(GLFW_KEY_RIGHT)) m_camera2D->Pan({-1, 0});
 	if(input.IsKeyDown(GLFW_KEY_LEFT)) m_camera2D->Pan({1, 0});
 	if(input.IsKeyDown(GLFW_KEY_UP)) m_camera2D->Pan({0, 1});

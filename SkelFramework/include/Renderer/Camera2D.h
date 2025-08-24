@@ -23,6 +23,11 @@ namespace skel
 		float GetZoom() const { return m_zoom; }
 
 	private:
+		// settings
+		static constexpr float m_minZoomLevel = 0.1f;
+		static constexpr float m_maxZoomLevel = 10.0f;
+
+		// variables
 		glm::vec2 m_position = glm::vec2(0.0f);
 		float m_zoom = 1.0f;
 

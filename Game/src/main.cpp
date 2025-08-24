@@ -1,10 +1,10 @@
 #include "skelpch.h"
 #include "Core/Engine.h"
-#include "UpgradeTree.h"
+#include "SkelGameBase.h"
 
 int main()
 {
-	UpgradeTree mainGame;
+	SkelGameBase mainGame;
 	Engine::GetInstance().Run(mainGame);
 
 	return 0;

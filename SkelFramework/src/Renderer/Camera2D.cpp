@@ -18,7 +18,7 @@ namespace skel
 
 	void Camera2D::SetZoom(float zoom)
 	{
-		m_zoom = glm::clamp(zoom, 0.1f, 10.0f);
+		m_zoom = glm::clamp(zoom, m_minZoomLevel, m_maxZoomLevel);
 	}
 
 	void Camera2D::Zoom(float delta)
