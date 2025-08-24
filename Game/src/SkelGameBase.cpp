@@ -8,6 +8,7 @@ EngineInitValues SkelGameBase::GetStartupSettings()
 	return
 	{
 		.windowTitle = "Upgrade Tree",
+
 		.startupWindowWidth = 1600,
 		.startupWindowHeight = 900,
 		.startupWindowPosX = 50,
@@ -19,7 +20,7 @@ EngineInitValues SkelGameBase::GetStartupSettings()
 
 		.vsyncEnabled = false,
 
-		.showStatsPanelOnStartup = false,
+		.showStatsPanelOnStartup = true,
 		.detailedConsoleLogs = false,
 
 		.consoleToggleKey = GLFW_KEY_GRAVE_ACCENT, // set to GLFW_KEY_UNKNOWN to disable
@@ -42,12 +43,12 @@ void SkelGameBase::Initialize()
 	Engine::GetInstance().GetUIManager().RegisterPanel(uiTest);
 
 	m_upgradeTree = UpgradeTree::GetInstance();
-	m_upgradeTree->Initialize(m_screen.get(), this);
+	m_upgradeTree->Initialize(m_screen.get(), m_bgSurface.get(), this);
 }
 
 void SkelGameBase::Update(const float deltaTime)
 {
-	CameraControls();
+	// CameraControls();
 	m_upgradeTree->Update(deltaTime);
 }
 
@@ -57,6 +58,9 @@ void SkelGameBase::Render(Renderer& renderer)
 	m_screen->Clear(0xff555555);
 
 	m_upgradeTree->Draw();
+
+	float2 center = ToFloat2(m_screen->GetSize() / 2);
+	m_screen->Rectangle(center.x - 4, center.y - 4, center.x + 4, center.y + 4, 0xffff0000);
 
 	renderer.BlitSurface(*m_bgSurface, 0, 0, *m_staticCamera2D);
 	renderer.BlitSurface(*m_screen, 0, 0, *m_camera2D);

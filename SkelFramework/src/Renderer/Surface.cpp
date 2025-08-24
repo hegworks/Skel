@@ -172,6 +172,95 @@ void Surface::CopyTo(int x, int y, Surface& d) const
 	d.m_dirty = true;
 }
 
+void Surface::CopyToScaledFast(int x, int y, Surface& d, const float scale) const
+{
+	uint* dst = d.m_pixels;
+	const uint* src = m_pixels;
+	if((src) && (dst))
+	{
+		const int dstwidth = d.m_width;
+		const int dstheight = d.m_height;
+
+		// Compute scaled dimensions
+		const int scaledWidth = static_cast<int>(m_width * scale);
+		const int scaledHeight = static_cast<int>(m_height * scale);
+
+		// Adjust clipping without rescaling
+		int drawWidth = scaledWidth;
+		int drawHeight = scaledHeight;
+
+		int startX = 0;
+		int startY = 0;
+
+		// Clip left/top
+		if(x < 0) startX = -x, drawWidth += x, x = 0;
+		if(y < 0) startY = -y, drawHeight += y, y = 0;
+
+		// Clip right/bottom
+		if(x + drawWidth > dstwidth) drawWidth = dstwidth - x;
+		if(y + drawHeight > dstheight) drawHeight = dstheight - y;
+
+		if(drawWidth > 0 && drawHeight > 0)
+		{
+			for(int j = 0; j < drawHeight; j++)
+			{
+				int sy = ((j + startY) * m_height) / scaledHeight; // source row
+				if(sy < 0) sy = 0;
+				for(int i = 0; i < drawWidth; i++)
+				{
+					int sx = ((i + startX) * m_width) / scaledWidth; // source col
+					if(sx < 0) sx = 0;
+					dst[(y + j) * dstwidth + (x + i)] = src[sy * m_width + sx];
+				}
+			}
+		}
+	}
+	d.m_dirty = true;
+}
+
+void Surface::CopyToScaledPrecise(int x, int y, Surface& d, float scale) const
+{
+	uint* dst = d.m_pixels;
+	const uint* src = m_pixels;
+	if(!(src && dst)) return;
+
+	const int dstW = d.m_width;
+	const int dstH = d.m_height;
+
+	// Precompute the scaled size of the source
+	const int scaledW = static_cast<int>(m_width * scale);
+	const int scaledH = static_cast<int>(m_height * scale);
+	if(scaledW <= 0 || scaledH <= 0) return;
+
+	// Destination region we want to cover
+	const int dstStartX = std::max(0, x);
+	const int dstStartY = std::max(0, y);
+	const int dstEndX = std::min(dstW, x + scaledW);
+	const int dstEndY = std::min(dstH, y + scaledH);
+
+	if(dstStartX >= dstEndX || dstStartY >= dstEndY) return;
+
+	// Iterate over every pixel in the *destination* region
+	for(int dy = dstStartY; dy < dstEndY; ++dy)
+	{
+		// Corresponding source Y (nearest neighbor)
+		int sy = static_cast<int>((dy - y) / scale);
+		if(sy < 0) sy = 0;
+		if(sy >= m_height) sy = m_height - 1;
+
+		for(int dx = dstStartX; dx < dstEndX; ++dx)
+		{
+			int sx = static_cast<int>((dx - x) / scale);
+			if(sx < 0) sx = 0;
+			if(sx >= m_width) sx = m_width - 1;
+
+			dst[dy * dstW + dx] = src[sy * m_width + sx];
+		}
+	}
+
+	d.m_dirty = true;
+}
+
 void skel::Surface::CopyTo(const int2& p, Surface& d) const
 {
 	CopyTo(p.x, p.y, d);
