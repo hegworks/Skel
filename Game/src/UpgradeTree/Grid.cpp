@@ -18,6 +18,9 @@ Grid::Grid()
 	m_totalLength.x = (m_tileLength.x + m_spacing.x) * m_count.x - m_spacing.x + m_gridMargin.x * 2.0f;
 	m_totalLength.y = (m_tileLength.y + m_spacing.y) * m_count.y - m_spacing.y + m_gridMargin.y * 2.0f;
 
+	m_noneTileMousePosDecimal.x = 2.0f - (m_tileLength.x / (2.0f * m_spacing.x));
+	m_noneTileMousePosDecimal.y = 2.0f - (m_tileLength.y / (2.0f * m_spacing.y));
+
 	m_gridSurface = new ScaledSurface(m_totalLength.x, m_totalLength.y, false, m_screen->GetSize());
 	m_gridSurface->GetSurface()->Clear(0xff00ff00);
 
@@ -25,6 +28,8 @@ Grid::Grid()
 
 	Surface* numberedSurface = new Surface(m_nodeSurface->GetSize().x, m_nodeSurface->GetSize().y, false);
 	int idx = 0;
+	int2 pos{0};
+	pos += m_gridMargin;
 	for(int row = 0; row < m_count.y; ++row)
 	{
 		for(int col = 0; col < m_count.x; ++col)
@@ -32,13 +37,17 @@ Grid::Grid()
 			numberedSurface->Clear(0);
 			m_nodeSurface->CopyTo(*numberedSurface, 0, 0);
 			m_textRenderer->DrawOnSurface(numberedSurface, std::to_string(idx), 85, 135, 10);
-			const int2 pos = int2((m_tileLength.x + m_spacing.x) * col + m_gridMargin.x,
-			                      (m_tileLength.y + m_spacing.y) * row + m_gridMargin.y);
+			// const int2 pos = int2((m_tileLength.x + m_spacing.x) * col + m_gridMargin.x,
+			// (m_tileLength.y + m_spacing.y) * row + m_gridMargin.y);
 			numberedSurface->CopyTo(*m_gridSurface->GetSurface(), pos.x, pos.y);
 			VNode* node = new VNode(idx, pos);
 			m_nodeList.push_back(node);
+
 			idx++;
+			pos.x += m_tileLength.x + m_spacing.x;
 		}
+		pos.x = m_gridMargin.x;
+		pos.y += m_tileLength.y + m_spacing.y;
 	}
 	delete numberedSurface;
 }
@@ -78,6 +87,32 @@ void Grid::Draw()
 void Grid::Update(float deltaTime)
 {
 	const InputManager& input = Engine::GetInstance().GetInput();
+	const int2 mousePosI = input.GetMousePosition();
+	const float2 mousePosF = ToFloat2(mousePosI);
+	const int2 mousePosOnGridI = ToInt2(m_gridSurface->GetScreenToSurface(mousePosF));
+
+	// SKEL_INFO("mousePosOnGridI: {},{}", mousePosOnGridI.x, mousePosOnGridI.y);
+
+	float colF = float(mousePosOnGridI.x - m_gridMargin.x) / float(m_nodeSurface->GetWidth() + m_spacing.x);
+	float rowF = float(mousePosOnGridI.y - m_gridMargin.y) / float(m_nodeSurface->GetHeight() + m_spacing.y);
+	float dummy{0.0f};
+	const bool isInEmptySpace =
+		colF < 0 || rowF < 0 ||
+		modf(colF, &dummy) > m_noneTileMousePosDecimal.x ||
+		modf(rowF, &dummy) > m_noneTileMousePosDecimal.y;
+	int colI = isInEmptySpace ? -1 : int(colF);
+	int rowI = isInEmptySpace ? -1 : int(rowF);
+	int idx = std::max(-1, rowI * m_count.x + colI);
+
+	if(idx != m_hoveredIdx)
+	{
+		m_hoveredIdx = idx;
+		SKEL_INFO("idx: {}", m_hoveredIdx);
+	}
+
+	// SKEL_INFO("colF,rowF: {},{}", colF, rowF);
+	// SKEL_INFO("colI,rowI: {},{}", colI, rowI);
+	// SKEL_INFO("idx: {}", m_hoveredIdx);
 
 	if(input.IsKeyDown(GLFW_KEY_D)) m_gridSurface->m_origin.x -= deltaTime * 2000.0f;
 	if(input.IsKeyDown(GLFW_KEY_A)) m_gridSurface->m_origin.x += deltaTime * 2000.0f;

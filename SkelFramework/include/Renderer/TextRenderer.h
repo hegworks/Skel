@@ -17,9 +17,9 @@ namespace skel
 		int m_charSpacing = 0;
 		int m_lineSpacing = 0;
 
-		static constexpr int MAX_FRAME_COUNT = 50;
-		Surface* m_pSurfaces[50];
-		Sprite* m_pSprites[50];
+		static constexpr int MAX_FRAME_COUNT = 64;
+		Surface* m_pSurfaces[64];
+		Sprite* m_pSprites[64];
 
 		int (*m_CharToIndex)(char c) = nullptr;
 

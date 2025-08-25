@@ -26,6 +26,8 @@ private:
 
 	// variables
 	int2 m_totalLength{0};
+	float2 m_noneTileMousePosDecimal{0};
+	int m_hoveredIdx{-1};
 
 	UpgradeTree* m_upgradeTree{nullptr};
 	Surface* m_screen{nullptr};
