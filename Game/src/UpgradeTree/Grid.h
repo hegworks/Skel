@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "ScaleSurface.h"
 #include "Renderer/Surface.h"
 
 class VNode;
@@ -24,18 +25,10 @@ private:
 	UpgradeTree* m_upgradeTree{nullptr};
 	Surface* m_screen{nullptr};
 	Surface* m_bgSurface{nullptr};
-
-	Surface* m_gridSurface{nullptr};
+	
+	ScaleSurface* m_gridScaleSurface{nullptr};
 	Surface* m_nodeSurface{nullptr};
 	Surface* m_nodeHoveredSurface{nullptr};
 
-	float2 m_gridOrigin{0, 0};
-	float m_gridScale{1};
-
 	std::list<VNode*> m_nodeList;
-
-	float2 ScreenToGrid(const float2& coord) const;
-	float2 GridToScreen(const float2& coord) const;
-	int2 GridDrawPosOnScreen() const;
-	float2 GridCenterOnScreen() const;
 };
