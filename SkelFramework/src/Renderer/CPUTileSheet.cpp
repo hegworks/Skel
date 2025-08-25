@@ -34,7 +34,7 @@ namespace skel
 		useTransparency = other.useTransparency;
 
 		surface = new skel::Surface(other.surface->GetWidth(), other.surface->GetHeight(), false);
-		other.surface->CopyTo(0, 0, *surface);
+		other.surface->CopyTo(*surface, 0, 0);
 
 		cellPositionStart = new skel::uint[cellGrid.x * cellGrid.y];
 		for(int i = 0; i < cellGrid.x * cellGrid.y; i++)
@@ -61,7 +61,7 @@ namespace skel
 			delete[] cellPositionStart;
 
 			surface = new skel::Surface(rhs.surface->GetWidth(), rhs.surface->GetHeight(), false);
-			rhs.surface->CopyTo(0, 0, *surface);
+			rhs.surface->CopyTo(*surface, 0, 0);
 
 			cellPositionStart = new skel::uint[cellGrid.x * cellGrid.y];
 			for(int i = 0; i < cellGrid.x * cellGrid.y; i++)

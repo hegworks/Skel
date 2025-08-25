@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "ScaleSurface.h"
+#include "ScaledSurface.h"
 #include "Renderer/Surface.h"
 
 class VNode;
@@ -25,8 +25,8 @@ private:
 	UpgradeTree* m_upgradeTree{nullptr};
 	Surface* m_screen{nullptr};
 	Surface* m_bgSurface{nullptr};
-	
-	ScaleSurface* m_gridScaleSurface{nullptr};
+
+	ScaledSurface* m_gridSurface{nullptr};
 	Surface* m_nodeSurface{nullptr};
 	Surface* m_nodeHoveredSurface{nullptr};
 

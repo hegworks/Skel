@@ -25,12 +25,11 @@ namespace skel
 		void Line(int x1, int y1, int x2, int y2, uint color);
 		void Line(const int2& p1, const int2& p2, uint color);
 
-		void CopyTo(int x, int y, Surface& d) const;
+		void CopyTo(Surface& d, int x, int y) const;
 		// clipped nearest-neighbor scaling that breaks on very large scales (iterates over source)
-		void CopyToScaledFast(int x, int y, Surface& d, float scale) const;
+		void CopyToScaledFast(Surface& d, int x, int y, float scale) const;
 		// clipped nearest-neighbor scaling that doesn't beak on very large scales (iterates over destination)
-		void CopyToScaledPrecise(int x, int y, Surface& d, float scale) const;
-		void CopyTo(const int2& p, Surface& d) const;
+		void CopyToScaledPrecise(Surface& d, int x, int y, float scale) const;
 
 		void Rectangle(int x1, int y1, int x2, int y2, uint color, int strokeWidth = 0);
 		void Rectangle(const int2& p1, const int2& p2, uint color, int strokeWidth = 0);

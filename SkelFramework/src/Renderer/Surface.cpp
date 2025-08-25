@@ -143,7 +143,7 @@ void skel::Surface::Line(const int2& p1, const int2& p2, const uint color)
 	Line(p1.x, p1.y, p2.x, p2.y, color);
 }
 
-void Surface::CopyTo(int x, int y, Surface& d) const
+void Surface::CopyTo(Surface& d, int x, int y) const
 {
 	uint* dst = d.m_pixels;
 	uint* src = m_pixels;
@@ -172,7 +172,7 @@ void Surface::CopyTo(int x, int y, Surface& d) const
 	d.m_dirty = true;
 }
 
-void Surface::CopyToScaledFast(int x, int y, Surface& d, const float scale) const
+void Surface::CopyToScaledFast(Surface& d, int x, int y, const float scale) const
 {
 	uint* dst = d.m_pixels;
 	const uint* src = m_pixels;
@@ -218,7 +218,7 @@ void Surface::CopyToScaledFast(int x, int y, Surface& d, const float scale) cons
 	d.m_dirty = true;
 }
 
-void Surface::CopyToScaledPrecise(int x, int y, Surface& d, float scale) const
+void Surface::CopyToScaledPrecise(Surface& d, int x, int y, float scale) const
 {
 	uint* dst = d.m_pixels;
 	const uint* src = m_pixels;
@@ -259,11 +259,6 @@ void Surface::CopyToScaledPrecise(int x, int y, Surface& d, float scale) const
 	}
 
 	d.m_dirty = true;
-}
-
-void skel::Surface::CopyTo(const int2& p, Surface& d) const
-{
-	CopyTo(p.x, p.y, d);
 }
 
 void skel::Surface::Rectangle(const int x1, const int y1, const int x2, const int y2, const uint color, int strokeWidth)

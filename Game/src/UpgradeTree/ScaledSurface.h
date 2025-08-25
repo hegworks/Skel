@@ -1,11 +1,11 @@
 ﻿#pragma once
 #include "Renderer/Surface.h"
 
-class ScaleSurface
+class ScaledSurface
 {
 public:
-	ScaleSurface(const std::string& filePath, bool needGPUTexture, int2 screenSize);
-	ScaleSurface(int width, int height, bool needGPUTexture, int2 screenSize);
+	ScaledSurface(const std::string& filePath, bool needGPUTexture, int2 screenSize);
+	ScaledSurface(int width, int height, bool needGPUTexture, int2 screenSize);
 
 	float2 m_origin{0.0f};
 
