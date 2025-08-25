@@ -3,13 +3,15 @@
 
 #include "SkelGameBase.h"
 #include "UpgradeTree.h"
+#include "VIsual/VNode.h"
 
 Grid::Grid()
 {
 	m_upgradeTree = UpgradeTree::GetInstance();
 	m_screen = m_upgradeTree->GetScreen();
 	m_bgSurface = m_upgradeTree->GetBgSurface();
-	m_outerSurface = m_upgradeTree->GetAssetManager().AutoGetSurface("NodeOuter", false, "assets/node_512.png");
+	m_nodeSurface = m_upgradeTree->GetAssetManager().AutoGetSurface("Node", false, "assets/node_512.png");
+	m_nodeHoveredSurface = m_upgradeTree->GetAssetManager().AutoGetSurface("NodeHovered", false, "assets/node_Hovered.png");
 
 	m_totalLength.x = (m_tileLength.x + m_spacing.x) * m_count.x - m_spacing.x + m_gridMargin.x * 2.0f;
 	m_totalLength.y = (m_tileLength.y + m_spacing.y) * m_count.y - m_spacing.y + m_gridMargin.y * 2.0f;
@@ -19,12 +21,18 @@ Grid::Grid()
 
 	m_gridOrigin = {0, 0};
 
+	m_nodeList.clear();
+
+	int idx = 0;
 	for(int row = 0; row < m_count.y; ++row)
 	{
 		for(int col = 0; col < m_count.x; ++col)
 		{
-			m_outerSurface->CopyTo((m_tileLength.x + m_spacing.x) * col + m_gridMargin.x,
-			                       (m_tileLength.y + m_spacing.y) * row + m_gridMargin.y, *m_gridSurface);
+			const int2 pos = int2((m_tileLength.x + m_spacing.x) * col + m_gridMargin.x,
+			                      (m_tileLength.y + m_spacing.y) * row + m_gridMargin.y);
+			m_nodeSurface->CopyTo(pos.x, pos.y, *m_gridSurface);
+			VNode* node = new VNode(idx, pos);
+			m_nodeList.push_back(node);
 		}
 	}
 }
