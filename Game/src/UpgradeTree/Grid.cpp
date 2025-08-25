@@ -3,11 +3,13 @@
 
 #include "SkelGameBase.h"
 #include "UpgradeTree.h"
+#include "Renderer/TextRenderer.h"
 #include "VIsual/VNode.h"
 
 Grid::Grid()
 {
 	m_upgradeTree = UpgradeTree::GetInstance();
+	m_textRenderer = m_upgradeTree->GetTextRenderer();
 	m_screen = m_upgradeTree->GetScreen();
 	m_bgSurface = m_upgradeTree->GetBgSurface();
 	m_nodeSurface = m_upgradeTree->GetAssetManager().AutoGetSurface("Node", false, "assets/node_512.png");
@@ -21,29 +23,35 @@ Grid::Grid()
 
 	m_nodeList.clear();
 
+	Surface* numberedSurface = new Surface(m_nodeSurface->GetSize().x, m_nodeSurface->GetSize().y, false);
 	int idx = 0;
 	for(int row = 0; row < m_count.y; ++row)
 	{
 		for(int col = 0; col < m_count.x; ++col)
 		{
+			numberedSurface->Clear(0);
+			m_nodeSurface->CopyTo(*numberedSurface, 0, 0);
+			m_textRenderer->DrawOnSurface(numberedSurface, std::to_string(idx), 85, 135, 10);
 			const int2 pos = int2((m_tileLength.x + m_spacing.x) * col + m_gridMargin.x,
 			                      (m_tileLength.y + m_spacing.y) * row + m_gridMargin.y);
-			m_nodeSurface->CopyTo(*m_gridSurface->GetSurface(), pos.x, pos.y);
+			numberedSurface->CopyTo(*m_gridSurface->GetSurface(), pos.x, pos.y);
 			VNode* node = new VNode(idx, pos);
 			m_nodeList.push_back(node);
+			idx++;
 		}
 	}
+	delete numberedSurface;
 }
 
 void Grid::Draw()
 {
-	// m_gridSurface->Clear(0xffcccccc);
+	// m_gridSurface->GetSurface()->Clear(0xffcccccc);
 
 	const InputManager& input = Engine::GetInstance().GetInput();
 	const int2 mousePosI = input.GetMousePosition();
 	// const float2 mousePosF = ToFloat2(mousePosI);
-	// const int2 mousePosOnGridI = ToInt2(ScreenToGrid(mousePosF));
-	// m_gridSurface->Rectangle(mousePosOnGridI.x - 8, mousePosOnGridI.y - 8, mousePosOnGridI.x + 8, mousePosOnGridI.y + 8, 0xff00ff00);
+	// const int2 mousePosOnGridI = ToInt2(m_gridSurface->GetScreenToSurface(mousePosF));
+	// m_gridSurface->GetSurface()->Rectangle(mousePosOnGridI.x - 8, mousePosOnGridI.y - 8, mousePosOnGridI.x + 8, mousePosOnGridI.y + 8, 0xff00ff00);
 
 	// const int2 gridTopLeftOnGrid = {0, 0};
 	// m_gridSurface->Rectangle(gridTopLeftOnGrid.x - 8, gridTopLeftOnGrid.y - 8, gridTopLeftOnGrid.x + 8, gridTopLeftOnGrid.y + 8, 0xff00ff00);

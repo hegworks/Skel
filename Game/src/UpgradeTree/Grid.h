@@ -2,6 +2,11 @@
 #include "ScaledSurface.h"
 #include "Renderer/Surface.h"
 
+namespace skel
+{
+	class TextRenderer;
+}
+
 class VNode;
 class UpgradeTree;
 
@@ -25,6 +30,7 @@ private:
 	UpgradeTree* m_upgradeTree{nullptr};
 	Surface* m_screen{nullptr};
 	Surface* m_bgSurface{nullptr};
+	TextRenderer* m_textRenderer{nullptr};
 
 	ScaledSurface* m_gridSurface{nullptr};
 	Surface* m_nodeSurface{nullptr};

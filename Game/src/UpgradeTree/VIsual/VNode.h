@@ -10,6 +10,7 @@ public:
 
 	int m_idx{0}; // in grid
 	int2 m_pixelPos{0}; // in grid
+	bool m_isHovered{false};
 
 	Surface* m_surface{nullptr};
 	Surface* m_surfaceHovered{nullptr};

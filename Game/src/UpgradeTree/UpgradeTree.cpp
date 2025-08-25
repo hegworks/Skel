@@ -8,6 +8,7 @@ void UpgradeTree::Initialize(Surface* screen, Surface* bgSurface, SkelGameBase* 
 	m_skellGameBase = skellGameBase;
 
 	m_assetManager = std::make_unique<AssetManager>();
+	m_textRenderer = std::make_unique<TextRenderer>("assets/Font.png", 41, 1, 4, FontTextRendererCharToIndex);
 	m_grid = std::make_unique<Grid>();
 }
 
