@@ -27,6 +27,7 @@ Grid::Grid()
 	m_nodeList.clear();
 
 	Surface* numberedSurface = new Surface(m_nodeSurface->GetSize().x, m_nodeSurface->GetSize().y, false);
+	Surface* numberedHoveredSurface = new Surface(m_nodeSurface->GetSize().x, m_nodeSurface->GetSize().y, false);
 	int idx = 0;
 	int2 pos{0};
 	pos += m_gridMargin;
@@ -35,12 +36,14 @@ Grid::Grid()
 		for(int col = 0; col < m_count.x; ++col)
 		{
 			numberedSurface->Clear(0);
+			numberedHoveredSurface->Clear(0);
 			m_nodeSurface->CopyTo(*numberedSurface, 0, 0);
+			m_nodeHoveredSurface->CopyTo(*numberedHoveredSurface, 0, 0);
 			m_textRenderer->DrawOnSurface(numberedSurface, std::to_string(idx), 85, 135, 10);
-			// const int2 pos = int2((m_tileLength.x + m_spacing.x) * col + m_gridMargin.x,
-			// (m_tileLength.y + m_spacing.y) * row + m_gridMargin.y);
+			m_textRenderer->DrawOnSurface(numberedHoveredSurface, std::to_string(idx), 85, 135, 10);
 			numberedSurface->CopyTo(*m_gridSurface->GetSurface(), pos.x, pos.y);
-			VNode* node = new VNode(idx, pos);
+
+			VNode* node = new VNode(idx, pos, new Surface(*numberedSurface, false), new Surface(*numberedHoveredSurface, false));
 			m_nodeList.push_back(node);
 
 			idx++;
@@ -97,7 +100,7 @@ void Grid::Update(float deltaTime)
 	float rowF = float(mousePosOnGridI.y - m_gridMargin.y) / float(m_nodeSurface->GetHeight() + m_spacing.y);
 	float dummy{0.0f};
 	const bool isInEmptySpace =
-		colF < 0 || rowF < 0 ||
+		colF < 0 || rowF < 0 || colF >= m_count.x || rowF >= m_count.y ||
 		modf(colF, &dummy) > m_noneTileMousePosDecimal.x ||
 		modf(rowF, &dummy) > m_noneTileMousePosDecimal.y;
 	int colI = isInEmptySpace ? -1 : int(colF);
@@ -106,6 +109,16 @@ void Grid::Update(float deltaTime)
 
 	if(idx != m_hoveredIdx)
 	{
+		if(m_hoveredIdx != -1)
+		{
+			const VNode* unHoveredNode = m_nodeList[m_hoveredIdx];
+			unHoveredNode->m_surface->CopyTo(*m_gridSurface->GetSurface(), unHoveredNode->m_pixelPos.x, unHoveredNode->m_pixelPos.y);
+		}
+		if(idx != -1)
+		{
+			const VNode* hoveredNode = m_nodeList[idx];
+			hoveredNode->m_surfaceHovered->CopyTo(*m_gridSurface->GetSurface(), hoveredNode->m_pixelPos.x, hoveredNode->m_pixelPos.y);
+		}
 		m_hoveredIdx = idx;
 		SKEL_INFO("idx: {}", m_hoveredIdx);
 	}

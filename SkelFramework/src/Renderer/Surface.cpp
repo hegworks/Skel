@@ -67,6 +67,16 @@ skel::Surface::Surface(const std::string& file, bool needGPUTexture)
 	if(needGPUTexture) InitTexture();
 }
 
+Surface::Surface(const Surface& surface, const bool needGPUTexture)
+{
+	m_width = surface.GetWidth();
+	m_height = surface.GetHeight();
+	m_pixels = new uint32_t[m_height * m_width];
+	// Clear(0);
+	if(needGPUTexture) InitTexture();
+	surface.CopyTo(*this, 0, 0);
+}
+
 skel::Surface::~Surface()
 {
 	delete[] m_pixels;

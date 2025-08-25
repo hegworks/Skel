@@ -7,10 +7,11 @@ namespace skel
 	public:
 		Surface(int width, int height, bool needGPUTexture);
 		Surface(const std::string& file, bool needGPUTexture);
+		Surface(const Surface& surface, bool needGPUTexture);
 		~Surface();
 
-		Surface(const Surface& other) = delete;
-		Surface& operator=(const Surface& other) = delete;
+		// Surface(const Surface& other) = delete;
+		// Surface& operator=(const Surface& rhs);
 
 		// rendering
 

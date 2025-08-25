@@ -28,6 +28,7 @@ private:
 	int2 m_totalLength{0};
 	float2 m_noneTileMousePosDecimal{0};
 	int m_hoveredIdx{-1};
+	Surface* m_hoveredSurface{nullptr};
 
 	UpgradeTree* m_upgradeTree{nullptr};
 	Surface* m_screen{nullptr};
@@ -38,5 +39,5 @@ private:
 	Surface* m_nodeSurface{nullptr};
 	Surface* m_nodeHoveredSurface{nullptr};
 
-	std::list<VNode*> m_nodeList;
+	std::vector<VNode*> m_nodeList;
 };
